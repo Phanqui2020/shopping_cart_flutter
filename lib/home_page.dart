@@ -1,9 +1,11 @@
 import 'package:badges/badges.dart';
-import 'package:demo/Provider/CounterProvider.dart';
-import 'package:demo/cart_page.dart';
+import 'package:demo/Provider/CartProvide.dart';
+import 'package:demo/sqlite/db_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/src/provider.dart';
+import 'package:provider/provider.dart';
+
+import 'model/cart_model.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,6 +15,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  DBhelper? dBhelper = DBhelper();
+
   List<String> productName = [
     'Mango',
     'Orange',
@@ -47,12 +52,18 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final cart = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text("HOME"),
         actions: [
           Badge(
-            badgeContent: const Text('0'),
+            badgeContent: Consumer<CartProvider>(
+          builder: (context, value, child){
+            return Text(value.getCounter().toString());
+          }
+
+      ) ,
             animationDuration: const Duration(microseconds: 300),
             child: const Icon(Icons.shopping_bag_outlined),
           ),
@@ -146,7 +157,26 @@ class _HomePageState extends State<HomePage> {
                                     color: Theme.of(context).primaryColor,
                                     textColor: Colors.white,
                                     child: const Icon(CupertinoIcons.cart),
-                                    onPressed: () => {},
+                                    onPressed: () => {
+                                      dBhelper!.insert(
+                                        Cart(
+                                          id: index,
+                                          productId: index.toString(),
+                                          productName: productName[index].toString(),
+                                          initialPrice: productPrice[index],
+                                          productPrice : productPrice[index],
+                                          quantity: 1,
+                                          unitTag: productUnit[index].toString(),
+                                          image: productImage[index].toString(),
+                                        )
+                                      ).then((value){
+                                        print("success!");
+                                        cart.addCounter();
+                                        cart.addTotalPrice(double.parse(productPrice[index].toString()));
+                                      }).onError((error, stackTrace){
+                                        print(error.toString());
+                                      })
+                                    },
                                     splashColor: Colors.blueGrey,
                                   ),
                                 ),
