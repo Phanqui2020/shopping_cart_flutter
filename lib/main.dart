@@ -1,10 +1,9 @@
-import 'package:demo/Provider/CartProvide.dart';
-import 'package:demo/home_page.dart';
+import 'package:demo/Provider/CartProvider.dart';
+import 'view/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'login_page.dart';
-import 'cart_page.dart';
-import 'Provider/CounterProvider.dart';
+import 'view/login_page.dart';
+import 'view/cart_page.dart';
 
 void main() {
   runApp(const MyApp(),);

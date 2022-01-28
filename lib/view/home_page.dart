@@ -1,11 +1,12 @@
 import 'package:badges/badges.dart';
-import 'package:demo/Provider/CartProvide.dart';
+import 'package:demo/Provider/CartProvider.dart';
 import 'package:demo/sqlite/db_helper.dart';
+import 'package:demo/view/cart_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'model/cart_model.dart';
+import 'package:demo/model/cart_model.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -15,7 +16,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   DBhelper? dBhelper = DBhelper();
 
   List<String> productName = [
@@ -58,15 +58,22 @@ class _HomePageState extends State<HomePage> {
         title: const Text("HOME"),
         actions: [
           Badge(
-            badgeContent: Consumer<CartProvider>(
-          builder: (context, value, child){
-            return Text(value.getCounter().toString());
-          }
-
-      ) ,
-            animationDuration: const Duration(microseconds: 300),
-            child: const Icon(Icons.shopping_bag_outlined),
-          ),
+            animationType: BadgeAnimationType.slide,
+              position: BadgePosition.topEnd(top: 4, end: -5),
+              badgeContent:
+                  Consumer<CartProvider>(builder: (context, value, child) {
+                return Text(value.getCounter().toString());
+              }),
+              animationDuration: const Duration(microseconds: 300),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                constraints: BoxConstraints(),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const CartPage()));
+                },
+                icon: const Icon(Icons.shopping_bag_outlined),
+              )),
           const SizedBox(width: 20.0),
         ],
       ),
@@ -87,36 +94,54 @@ class _HomePageState extends State<HomePage> {
                               mainAxisSize: MainAxisSize.max,
                               children: [
                                 Image(
-                                  image: NetworkImage(productImage[index].toString()),
+                                  image: NetworkImage(
+                                      productImage[index].toString()),
                                   height: 100,
                                   width: 100,
                                 ),
                                 Expanded(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(productName[index].toString(),
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                      Text(
+                                        productName[index].toString(),
+                                        style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
                                       ),
-                                      const SizedBox(height: 10,),
-                                      Text(productPrice[index].toString() + "" + r"$/" +  productUnit[index].toString(),
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                      const SizedBox(
+                                        height: 10,
                                       ),
-                                      const SizedBox(height: 10,),
+                                      Text(
+                                        productPrice[index].toString() +
+                                            "" +
+                                            r"$/" +
+                                            productUnit[index].toString(),
+                                        style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
                                       Container(
                                         child: Row(
                                           children: [
                                             MaterialButton(
                                               height: 20.0,
                                               minWidth: 10.0,
-                                              color: Theme.of(context).primaryColor,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
                                               textColor: Colors.white,
                                               child: const Text("-"),
                                               onPressed: () => {},
                                               splashColor: Colors.blueGrey,
                                             ),
-                                            const SizedBox(width: 2,),
+                                            const SizedBox(
+                                              width: 2,
+                                            ),
                                             Container(
                                               height: 20.0,
                                               width: 50.0,
@@ -128,17 +153,22 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                               ),
                                             ),
-                                            const SizedBox(width: 2,),
+                                            const SizedBox(
+                                              width: 2,
+                                            ),
                                             MaterialButton(
                                               height: 20.0,
                                               minWidth: 10.0,
-                                              color: Theme.of(context).primaryColor,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
                                               textColor: Colors.white,
                                               child: const Text("+"),
                                               onPressed: () => {},
                                               splashColor: Colors.blueGrey,
                                             ),
-                                            const SizedBox(width: 2,),
+                                            const SizedBox(
+                                              width: 2,
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -149,8 +179,10 @@ class _HomePageState extends State<HomePage> {
                                   alignment: Alignment.centerRight,
                                   child: MaterialButton(
                                     shape: OutlineInputBorder(
-                                      borderSide: const BorderSide(color: Colors.white, width: 2.0),
-                                      borderRadius: BorderRadius.circular(250.0),
+                                      borderSide: const BorderSide(
+                                          color: Colors.white, width: 2.0),
+                                      borderRadius:
+                                          BorderRadius.circular(250.0),
                                     ),
                                     height: 40.0,
                                     minWidth: 40.0,
@@ -158,22 +190,24 @@ class _HomePageState extends State<HomePage> {
                                     textColor: Colors.white,
                                     child: const Icon(CupertinoIcons.cart),
                                     onPressed: () => {
-                                      dBhelper!.insert(
-                                        Cart(
-                                          id: index,
-                                          productId: index.toString(),
-                                          productName: productName[index].toString(),
-                                          initialPrice: productPrice[index],
-                                          productPrice : productPrice[index],
-                                          quantity: 1,
-                                          unitTag: productUnit[index].toString(),
-                                          image: productImage[index].toString(),
-                                        )
-                                      ).then((value){
+                                      dBhelper!
+                                          .insert(Cart(
+                                        id: index,
+                                        productId: index.toString(),
+                                        productName:
+                                            productName[index].toString(),
+                                        initialPrice: productPrice[index],
+                                        productPrice: productPrice[index],
+                                        quantity: 1,
+                                        unitTag: productUnit[index].toString(),
+                                        image: productImage[index].toString(),
+                                      ))
+                                          .then((value) {
                                         print("success!");
                                         cart.addCounter();
-                                        cart.addTotalPrice(double.parse(productPrice[index].toString()));
-                                      }).onError((error, stackTrace){
+                                        cart.addTotalPrice(double.parse(
+                                            productPrice[index].toString()));
+                                      }).onError((error, stackTrace) {
                                         print(error.toString());
                                       })
                                     },
