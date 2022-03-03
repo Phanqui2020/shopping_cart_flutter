@@ -4,6 +4,7 @@ import 'package:demo/sqlite/db_helper.dart';
 import 'package:demo/view/cart_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import 'package:demo/model/cart_model.dart';
@@ -190,25 +191,33 @@ class _HomePageState extends State<HomePage> {
                                     textColor: Colors.white,
                                     child: const Icon(CupertinoIcons.cart),
                                     onPressed: () => {
-                                      dBhelper!
-                                          .insert(Cart(
+                                      dBhelper!.insert(Cart(
                                         id: index,
                                         productId: index.toString(),
-                                        productName:
-                                            productName[index].toString(),
+                                        productName:productName[index].toString(),
                                         initialPrice: productPrice[index],
                                         productPrice: productPrice[index],
                                         quantity: 1,
                                         unitTag: productUnit[index].toString(),
                                         image: productImage[index].toString(),
-                                      ))
-                                          .then((value) {
+                                      )).then((value) {
                                         print("success!");
                                         cart.addCounter();
                                         cart.addTotalPrice(double.parse(
                                             productPrice[index].toString()));
                                       }).onError((error, stackTrace) {
                                         print(error.toString());
+                                        if(error.toString().contains("UNIQUE")){
+                                          Fluttertoast.showToast(
+                                              msg: "Already have in cart",
+                                              toastLength: Toast.LENGTH_SHORT,
+                                              gravity: ToastGravity.BOTTOM,
+                                              timeInSecForIosWeb: 1,
+                                              backgroundColor: Colors.red,
+                                              textColor: Colors.white,
+                                              fontSize: 16.0
+                                          );
+                                        }
                                       })
                                     },
                                     splashColor: Colors.blueGrey,
