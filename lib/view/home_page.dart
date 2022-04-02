@@ -1,10 +1,10 @@
 import 'package:badges/badges.dart';
-import 'package:demo/Provider/CartProvider.dart';
+import 'package:demo/Provider/cart_provider.dart';
+import 'package:demo/common/common_ulti.dart';
 import 'package:demo/sqlite/db_helper.dart';
 import 'package:demo/view/cart_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import 'package:demo/model/cart_model.dart';
@@ -54,6 +54,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<CartProvider>(context);
+    final commonUlti = CommonUlti();
     return Scaffold(
       appBar: AppBar(
         title: const Text("HOME"),
@@ -68,7 +69,7 @@ class _HomePageState extends State<HomePage> {
               animationDuration: const Duration(microseconds: 300),
               child: IconButton(
                 padding: EdgeInsets.zero,
-                constraints: BoxConstraints(),
+                constraints: const BoxConstraints(),
                 onPressed: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const CartPage()));
@@ -127,52 +128,6 @@ class _HomePageState extends State<HomePage> {
                                       const SizedBox(
                                         height: 10,
                                       ),
-                                      Container(
-                                        child: Row(
-                                          children: [
-                                            MaterialButton(
-                                              height: 20.0,
-                                              minWidth: 10.0,
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              textColor: Colors.white,
-                                              child: const Text("-"),
-                                              onPressed: () => {},
-                                              splashColor: Colors.blueGrey,
-                                            ),
-                                            const SizedBox(
-                                              width: 2,
-                                            ),
-                                            Container(
-                                              height: 20.0,
-                                              width: 50.0,
-                                              child: TextField(
-                                                maxLines: 1,
-                                                decoration: InputDecoration(
-                                                  fillColor: Colors.grey[300],
-                                                  filled: true,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              width: 2,
-                                            ),
-                                            MaterialButton(
-                                              height: 20.0,
-                                              minWidth: 10.0,
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              textColor: Colors.white,
-                                              child: const Text("+"),
-                                              onPressed: () => {},
-                                              splashColor: Colors.blueGrey,
-                                            ),
-                                            const SizedBox(
-                                              width: 2,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
                                     ],
                                   ),
                                 ),
@@ -208,15 +163,7 @@ class _HomePageState extends State<HomePage> {
                                       }).onError((error, stackTrace) {
                                         print(error.toString());
                                         if(error.toString().contains("UNIQUE")){
-                                          Fluttertoast.showToast(
-                                              msg: "Already have in cart",
-                                              toastLength: Toast.LENGTH_SHORT,
-                                              gravity: ToastGravity.BOTTOM,
-                                              timeInSecForIosWeb: 1,
-                                              backgroundColor: Colors.red,
-                                              textColor: Colors.white,
-                                              fontSize: 16.0
-                                          );
+                                          commonUlti.showToast("Already have in cart");
                                         }
                                       })
                                     },

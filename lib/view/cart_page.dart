@@ -1,4 +1,4 @@
-import 'package:demo/Provider/CartProvider.dart';
+import 'package:demo/Provider/cart_provider.dart';
 import 'package:demo/model/cart_model.dart';
 import 'package:demo/sqlite/db_helper.dart';
 import 'package:flutter/cupertino.dart';
