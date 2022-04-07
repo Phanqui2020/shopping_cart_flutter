@@ -1,13 +1,11 @@
 import 'package:badges/badges.dart';
 import 'package:demo/Provider/cart_provider.dart';
-import 'package:demo/common/common_ulti.dart';
-import 'package:demo/sqlite/db_helper.dart';
 import 'package:demo/view/cart_page.dart';
+import 'package:demo/view/home_page_component/account_screen.dart';
+import 'package:demo/view/home_page_component/home_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'package:demo/model/cart_model.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,54 +15,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  DBhelper? dBhelper = DBhelper();
 
-  List<String> productName = [
-    'Mango',
-    'Orange',
-    'Grapes',
-    'Banana',
-    'Chery',
-    'Peach',
-    'Mixed Fruit Basket',
-  ];
-
-  List<String> productUnit = [
-    'KG',
-    'KG',
-    'KG',
-    'KG',
-    'KG',
-    'KG',
-    'KG',
-  ];
-
-  List<int> productPrice = [10, 20, 30, 40, 50, 60, 70];
-
-  List<String> productImage = [
-    'https://image.shutterstock.com/image-photo/mango-isolated-on-white-background-600w-610892249.jpg',
-    'https://image.shutterstock.com/image-photo/orange-fruit-slices-leaves-isolated-600w-1386912362.jpg',
-    'https://image.shutterstock.com/image-photo/green-grape-leaves-isolated-on-600w-533487490.jpg',
-    'https://media.istockphoto.com/photos/banana-picture-id1184345169?s=612x612',
-    'https://media.istockphoto.com/photos/cherry-trio-with-stem-and-leaf-picture-id157428769?s=612x612',
-    'https://media.istockphoto.com/photos/single-whole-peach-fruit-with-leaf-and-slice-isolated-on-white-picture-id1151868959?s=612x612',
-    'https://media.istockphoto.com/photos/fruit-background-picture-id529664572?s=612x612',
+  int _currentIndex = 1;
+  final List<String> _currentTitle = [ "ACCOUNT","HOME", "CHAT"];
+  final screens = [
+    const AccountScreen(),
+    const HomeScreen(),
+    const Text("Developing function...", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.lightGreenAccent)),
   ];
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<CartProvider>(context);
-    final commonUlti = CommonUlti();
     return Scaffold(
       appBar: AppBar(
-        title: const Text("HOME"),
+        title: Text(_currentTitle[_currentIndex]),
         actions: [
           Badge(
             animationType: BadgeAnimationType.slide,
               position: BadgePosition.topEnd(top: 4, end: -5),
               badgeContent:
                   Consumer<CartProvider>(builder: (context, value, child) {
-                return Text(value.getCounter().toString());
+                    return Text(value.getCounter().toString());
               }),
               animationDuration: const Duration(microseconds: 300),
               child: IconButton(
@@ -79,106 +50,40 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(width: 20.0),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-              child: ListView.builder(
-                  itemCount: productName.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Image(
-                                  image: NetworkImage(
-                                      productImage[index].toString()),
-                                  height: 100,
-                                  width: 100,
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        productName[index].toString(),
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Text(
-                                        productPrice[index].toString() +
-                                            "" +
-                                            r"$/" +
-                                            productUnit[index].toString(),
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: MaterialButton(
-                                    shape: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                          color: Colors.white, width: 2.0),
-                                      borderRadius:
-                                          BorderRadius.circular(250.0),
-                                    ),
-                                    height: 40.0,
-                                    minWidth: 40.0,
-                                    color: Theme.of(context).primaryColor,
-                                    textColor: Colors.white,
-                                    child: const Icon(CupertinoIcons.cart),
-                                    onPressed: () => {
-                                      dBhelper!.insert(Cart(
-                                        id: index,
-                                        productId: index.toString(),
-                                        productName:productName[index].toString(),
-                                        initialPrice: productPrice[index],
-                                        productPrice: productPrice[index],
-                                        quantity: 1,
-                                        unitTag: productUnit[index].toString(),
-                                        image: productImage[index].toString(),
-                                      )).then((value) {
-                                        print("success!");
-                                        cart.addCounter();
-                                        cart.addTotalPrice(double.parse(
-                                            productPrice[index].toString()));
-                                      }).onError((error, stackTrace) {
-                                        print(error.toString());
-                                        if(error.toString().contains("UNIQUE")){
-                                          commonUlti.showToast("Already have in cart");
-                                        }
-                                      })
-                                    },
-                                    splashColor: Colors.blueGrey,
-                                  ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  })),
+      body:Container(
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/background.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: screens[_currentIndex],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.person),
+            label: "Account",
+            backgroundColor: Colors.blue,
+          ),
+
+          BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.home),
+            label: "Home",
+            backgroundColor: Colors.red,
+          ),
+
+          BottomNavigationBarItem(
+              icon: Icon(Icons.inbox),
+            label: "Chat",
+            backgroundColor: Colors.green,
+          ),
         ],
       ),
     );
   }
 }
+

@@ -1,4 +1,5 @@
 import 'package:demo/Provider/cart_provider.dart';
+import 'package:demo/sqlite/user_db_helper.dart';
 import 'package:demo/view/register_page.dart';
 import 'view/home_page.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
           title: 'Flutter Demo',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(scaffoldBackgroundColor: const Color(0xFFEFEFEF)),
-          home: const RegisterPage(),
+          home: const LoginPage(),
         );
       }),
     );

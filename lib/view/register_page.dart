@@ -54,24 +54,21 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         alignment: Alignment.center,
-        color: Colors.white38,
-        // decoration: const BoxDecoration(
-        //   image: DecorationImage(
-        //     image: AssetImage("assets/images/background.jpg"),
-        //     fit: BoxFit.cover,
-        //   ),
-        // ),
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/background.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(
             horizontal: 40.0,
-            vertical: 120.0,
           ),
           child: Form(
             key: _formKey,
@@ -165,8 +162,12 @@ class _RegisterPageState extends State<RegisterPage> {
                     color: Colors.blue,
                     onPressed: () {
                       if(_formKey.currentState!.validate()){
-                        _authService.signUp(email.text, password.text, userName.text, avatar!);
-                        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const LoginPage()));
+                        if(avatar!=null){
+                          _authService.signUp(email.text, password.text, userName.text, avatar!);
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const LoginPage()));
+                        }else{
+                          commonUlti.showToast("Please select the avatar");
+                        }
                       }
                     },
                     shape: RoundedRectangleBorder(

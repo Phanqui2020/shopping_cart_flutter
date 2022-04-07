@@ -1,6 +1,6 @@
 import 'package:demo/Provider/cart_provider.dart';
 import 'package:demo/model/cart_model.dart';
-import 'package:demo/sqlite/db_helper.dart';
+import 'package:demo/sqlite/cart_db_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +13,7 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  DBhelper dBhelper = DBhelper();
+  CartDB dBhelper = CartDB();
 
   @override
   Widget build(BuildContext context) {
@@ -169,18 +169,23 @@ class _CartPageState extends State<CartPage> {
                 }
                 else{
                   return Column(
-                    children: [
-                      Text("hello!")
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [
+                      Image(image: AssetImage("assets/images/empty.png"),fit: BoxFit.fill),
                     ],
                   );
                 }
             }),
             Consumer<CartProvider>(builder: (context,value, child){
-              return Column(
-                children: [
-                  TotalPrice(title: "Total Price", value: r'$' + value.getTotalPrice().toStringAsFixed(2))],
-                );
-              })
+              return Visibility(
+                visible: value.getTotalPrice().toStringAsFixed(2) == "0.00" ? false : true,
+                child: Column(
+                  children: [
+                    TotalPrice(title: "Total Price", value: r'$' + value.getTotalPrice().toStringAsFixed(2))],
+                  ),
+              );
+            })
           ],
         ),
       ),

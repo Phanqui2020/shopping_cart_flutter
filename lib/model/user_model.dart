@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   String? uid;
   String? email;
@@ -27,5 +29,14 @@ class UserModel {
     };
   }
 
+  factory UserModel.fromFirestore(DocumentSnapshot doc) {
+    print("---- factoring user ----");
+    return UserModel(
+      uid: doc.get('uid') ?? '',
+      email: doc.get('email') ?? '',
+      name: doc.get('name') ?? '',
+      image: doc.get('image') ?? '',
+    );
+  }
 
 }

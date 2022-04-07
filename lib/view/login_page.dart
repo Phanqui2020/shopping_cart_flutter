@@ -1,11 +1,15 @@
+import 'package:demo/common/common_ulti.dart';
 import 'package:demo/model/user_model.dart';
+import 'package:demo/sqlite/user_db_helper.dart';
 import 'package:demo/view/register_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-import 'home_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/service/auth.dart';
+import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart' as ins;
+import 'package:demo/common/button_tapped.dart';
+import 'package:demo/common/button.dart';
+
+import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -16,23 +20,30 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+  final UserDb userDb = UserDb();
+  final CommonUlti commonUlti = CommonUlti();
+  // bool isPressed = true;
 
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
   final AuthService _authService = AuthService();
+  final CommonUlti _commonUlti = CommonUlti();
 
   @override
   Widget build(BuildContext context) {
+    // Offset distance = isPressed? Offset(, 10) : Offset(10, 10);
+    // double blur  = isPressed ? 5.0 : 30.0;
+
     return Scaffold(
       body: Container(
         alignment: Alignment.center,
-        color: Colors.white38,
-        // decoration: const BoxDecoration(
-        //   image: DecorationImage(
-        //     image: AssetImage("assets/images/background.jpg"),
-        //     fit: BoxFit.cover,
-        //   ),
-        // ),
+        // color: const Color(0xFFE7ECEF),
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/background.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(
@@ -47,15 +58,41 @@ class _LoginPageState extends State<LoginPage> {
                 Container(
                   alignment: Alignment.center,
                   child: const Image(
-                    image: AssetImage("assets/images/logo.jpg"),
+                    image: AssetImage("assets/images/logo.png"),
                   ),
                 ),
                 const SizedBox(height: 20.0),
+                const Text("Welcome!", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40, color: Colors.redAccent),),
                 const SizedBox(height: 20.0),
                 EmailWidget(username),
                 const SizedBox(height: 20.0),
                 PasswordWidget(password),
                 const SizedBox(height: 20.0),
+                // GestureDetector(
+                //   onTap: () => setState(() {
+                //     isPressed = !isPressed;
+                //   }),
+                //   child: AnimatedContainer(
+                //     duration: Duration(milliseconds: 100),
+                //     child: SizedBox(height: 70, width: 70,),
+                //       decoration: BoxDecoration(
+                //             borderRadius: BorderRadius.circular(30),
+                //             boxShadow: [
+                //               ins.BoxShadow(
+                //                 blurRadius: blur,
+                //                 offset: -distance,
+                //                 color: Colors.white,
+                //                 inset: true,
+                //               ),
+                //               ins.BoxShadow(
+                //                 inset: true,
+                //                 blurRadius: blur,
+                //                 offset: distance,
+                //                 color: Color(0xFFA7A9AF),
+                //               ),
+                //         ])
+                //   ),
+                // ),
                 Container(
                   height: 50.0,
                   width: double.infinity,
@@ -63,10 +100,19 @@ class _LoginPageState extends State<LoginPage> {
                     color: Colors.blue,
                     onPressed: () {
                       if(_formKey.currentState!.validate()){
-                        _authService.signIn(username.text, password.text);
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>HomePage()));
+                        _authService.signIn(username.text, password.text)
+                            .then((value) {
+                              userDb.insert(UserModel.fromFirestore(value))
+                              .then((value) {
+                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const HomePage()));
+                                commonUlti.showToast("Login successful!");
+                              })
+                              .onError((error, stackTrace) {
+                                commonUlti.showToast("An error has been occurred, Please try again");
+                               });
+                        });
                       }
-                     },
+                    },
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0)
                     ),
@@ -75,29 +121,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                //const SizedBox(height: 20.0),
-                // Container(
-                //   height: 50.0,
-                //   width: double.infinity,
-                //   child: RaisedButton(
-                //     color: Colors.blueGrey,
-                //     onPressed: () async {
-                //      //UserModel result = await _authService.signInAnonymous();
-                //      // if(result == null){
-                //      //   print("error login");
-                //      // }else{
-                //      //   print(result.uid);
-                //      // }
-                //       // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>HomePage()));
-                //     },
-                //     shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.circular(30.0)
-                //     ),
-                //     child: const Text(
-                //       "login Anonymous",
-                //     ),
-                //   ),
-                // ),
                 const SizedBox(height: 20.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

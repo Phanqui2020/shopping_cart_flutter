@@ -1,10 +1,10 @@
 import 'package:demo/model/cart_model.dart';
-import 'package:demo/sqlite/db_helper.dart';
+import 'package:demo/sqlite/cart_db_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CartProvider with ChangeNotifier{
-  DBhelper db = DBhelper();
+  CartDB db = CartDB();
 
   int _counter =0;
   int get counter => _counter;

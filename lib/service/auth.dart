@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:demo/sqlite/user_db_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:demo/model/user_model.dart';
 import 'package:demo/common/common_ulti.dart';
@@ -10,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CommonUlti commonUlti = CommonUlti();
+  final UserDb _userDb = UserDb();
 
   ///  create user based on UserCredential
 
@@ -42,15 +44,17 @@ class AuthService {
   //   }
   // }
   /// sign in with email, password
-  void signIn(String email, String password) async {
-      await _auth.signInWithEmailAndPassword(email: email, password: password)
-          .then((userCredential) => {
-            commonUlti.showToast("Login successful!")
-      })
-          .catchError((error){
-            var errorMessage = error.message;
-            commonUlti.showToast(errorMessage);
-      });
+  Future signIn(String email, String password) async {
+     return await _auth.signInWithEmailAndPassword(email: email, password: password)
+          .then((userCredential) {
+            CollectionReference col = FirebaseFirestore.instance
+         .collection('user')
+                .withConverter<UserModel>(
+                fromFirestore: ((snapshot, options) =>
+              UserModel.fromMap(snapshot.data()!)),
+                toFirestore: (user,_) => user.toMap());
+            return col.doc(userCredential.user!.uid).get();
+       });
   }
 
   /// register with email, password
@@ -83,7 +87,8 @@ class AuthService {
       UserModel userModel = UserModel(uid: uid,email: email, name: username, image: image);
       await fireStore
           .collection("user")
-          .add(userModel.toMap())
+          .doc(uid)
+          .set(userModel.toMap())
           .then((value) => {
             commonUlti.showToast("sign up success!")
           });
