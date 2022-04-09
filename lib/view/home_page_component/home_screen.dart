@@ -1,6 +1,8 @@
 import 'package:demo/common/common_ulti.dart';
 import 'package:demo/model/cart_model.dart';
+import 'package:demo/view/home_page_component/home_screen_component/home_item.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../Provider/cart_provider.dart';
@@ -23,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'Banana',
     'Chery',
     'Peach',
-    'Mixed Fruit Basket',
+    'Mixed Fruit',
   ];
 
   List<String> productUnit = [
@@ -50,104 +52,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<CartProvider>(context);
-    final commonUlti = CommonUlti();
     return Column(
       children: [
         Expanded(
-            child: ListView.builder(
+            child: GridView.builder(
+              padding: const EdgeInsets.all(15),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.95,
+                mainAxisSpacing: 20,
+                crossAxisSpacing: 20,
+              ),
                 itemCount: productName.length,
                 itemBuilder: (context, index) {
-                  return Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Image(
-                                image: NetworkImage(
-                                    productImage[index].toString()),
-                                height: 100,
-                                width: 100,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      productName[index].toString(),
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      productPrice[index].toString() +
-                                          "" +
-                                          r"$/" +
-                                          productUnit[index].toString(),
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: MaterialButton(
-                                  shape: OutlineInputBorder(
-                                    borderSide: const BorderSide(
-                                        color: Colors.white, width: 2.0),
-                                    borderRadius:
-                                    BorderRadius.circular(250.0),
-                                  ),
-                                  height: 40.0,
-                                  minWidth: 40.0,
-                                  color: Theme.of(context).primaryColor,
-                                  textColor: Colors.white,
-                                  child: const Icon(CupertinoIcons.cart),
-                                  onPressed: () => {
-                                    dBhelper!.insert(Cart(
-                                      id: index,
-                                      productId: index.toString(),
-                                      productName:productName[index].toString(),
-                                      initialPrice: productPrice[index],
-                                      productPrice: productPrice[index],
-                                      quantity: 1,
-                                      unitTag: productUnit[index].toString(),
-                                      image: productImage[index].toString(),
-                                    )).then((value) {
-                                      commonUlti.showToast("Added to cart");
-                                      cart.addCounter();
-                                      cart.addTotalPrice(double.parse(
-                                          productPrice[index].toString()));
-                                    }).onError((error, stackTrace) {
-                                      if(error.toString().contains("UNIQUE")){
-                                        commonUlti.showToast("Already have in cart");
-                                      }
-                                    })
-                                  },
-                                  splashColor: Colors.blueGrey,
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  );
+                  return CategoryItem(index, productImage[index], productName[index], productUnit[index], productPrice[index]);
                 })),
       ],
     );

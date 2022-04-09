@@ -1,13 +1,15 @@
 import 'dart:io';
 
 import 'package:demo/common/common_ulti.dart';
+import 'package:demo/model/cart_model.dart';
 import 'package:demo/model/user_model.dart';
 import 'package:demo/sqlite/user_db_helper.dart';
 import 'package:demo/view/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../sqlite/cart_db_helper.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({Key? key}) : super(key: key);
@@ -20,6 +22,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   final CommonUlti commonUlti = CommonUlti();
   final UserDb _userDb = UserDb();
+  final CartDB _cartDB = CartDB();
   XFile? avatar;
   File? avatarPath;
   String? avatarName;
@@ -77,8 +80,14 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                     ),
                     const SizedBox(height: 10,),
-                    Text("Hi! "+ snapshot.data!.name.toString(),
-                        style: const TextStyle(fontSize: 22,fontWeight: FontWeight.bold)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                      const Text("Hi! ", style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold)),
+                      Text(snapshot.data!.name.toString(),
+                          style: const TextStyle(fontSize: 22,fontWeight: FontWeight.bold, color: Colors.redAccent)),
+                      ]
+                    ),
                     const SizedBox(height: 10,),
                     Container(
                       padding: const EdgeInsets.all(10),
@@ -106,22 +115,24 @@ class _AccountScreenState extends State<AccountScreen> {
                                   Column(
                                     children: <Widget>[
                                       ...ListTile.divideTiles(
-                                        color: Colors.grey,
+                                        color: Colors.red,
                                         tiles: [
                                           ListTile(
                                             contentPadding: const EdgeInsets.symmetric(
                                                 horizontal: 12, vertical: 4),
-                                            leading: const Icon(Icons.person),
-                                            title: const Text("Username"),
-                                            subtitle: Text(snapshot.data!.name.toString()),
-                                            onTap: (){
-
-                                            },
+                                            leading: const Icon(Icons.account_circle_sharp, size: 40,),
+                                            title: const Text("Username", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, ),),
+                                            subtitle: Text(snapshot.data!.name.toString(), style: const TextStyle( fontSize: 16)),
+                                            onTap: (){ },
+                                            iconColor: Colors.redAccent,
                                           ),
                                           ListTile(
-                                            leading: const Icon(Icons.email),
-                                            title: const Text("Email"),
-                                            subtitle: Text(snapshot.data!.email.toString()),
+                                            contentPadding: const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 4),
+                                            leading: const Icon(Icons.email_outlined, size: 40,),
+                                            title: const Text("Email", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, )),
+                                            subtitle: Text(snapshot.data!.email.toString(), style: const TextStyle( fontSize: 16)),
+                                            iconColor: Colors.redAccent,
                                           ),
                                         ],
                                       ),
@@ -137,12 +148,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             width: double.infinity,
                             child: RaisedButton(
                               color: Colors.blue,
-                              onPressed: () {
-                                // if(_formKey.currentState!.validate()){
-                                //   _authService.signUp(email.text, password.text, userName.text, avatar!);
-                                //   //Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const LoginPage()));
-                                // }
-                              },
+                              onPressed: () {},
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30.0)
                               ),
@@ -160,8 +166,10 @@ class _AccountScreenState extends State<AccountScreen> {
                               color: Colors.grey,
                               onPressed: () {
                                 _userDb.deleteUserByUid(snapshot.data!.uid.toString()).then((value){
-                                  commonUlti.showToast("Log out successful!");
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const LoginPage()));
+                                  _cartDB.deleteAllProduct().then((value) {
+                                    commonUlti.showToast("Log out successful!");
+                                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const LoginPage()));
+                                  });
                                 }).onError((error, stackTrace) {
                                   commonUlti.showToast(error.toString());
                                 });

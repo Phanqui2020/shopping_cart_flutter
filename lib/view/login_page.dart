@@ -5,9 +5,6 @@ import 'package:demo/view/register_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:demo/service/auth.dart';
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart' as ins;
-import 'package:demo/common/button_tapped.dart';
-import 'package:demo/common/button.dart';
 
 import 'home_page.dart';
 

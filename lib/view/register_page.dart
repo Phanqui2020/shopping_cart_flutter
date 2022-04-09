@@ -163,8 +163,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     onPressed: () {
                       if(_formKey.currentState!.validate()){
                         if(avatar!=null){
-                          _authService.signUp(email.text, password.text, userName.text, avatar!);
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const LoginPage()));
+                          _authService.signUp(email.text, password.text, userName.text, avatar!).then((value){
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const LoginPage()));
+                          });
                         }else{
                           commonUlti.showToast("Please select the avatar");
                         }

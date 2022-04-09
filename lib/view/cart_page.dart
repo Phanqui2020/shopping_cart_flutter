@@ -30,7 +30,8 @@ class _CartPageState extends State<CartPage> {
               future: cart.getCartList(),
                 builder: (context, AsyncSnapshot<List<Cart>> sn){
                 if(sn.hasData) {
-                  return Expanded(
+                  if(sn.data!.isNotEmpty) {
+                    return Expanded(
                       child: ListView.builder(
                           itemCount: sn.data!.length,
                           itemBuilder: (context, index) {
@@ -88,9 +89,14 @@ class _CartPageState extends State<CartPage> {
                                                   color: Colors.greenAccent,
                                                   borderRadius: BorderRadius.circular(5),
                                                 ),
+                                                height: 30,
+                                                width: 80,
                                                 child: Row(
                                                   children: [
-                                                    IconButton(onPressed: (){
+                                                    IconButton(
+                                                        padding: EdgeInsets.zero,
+                                                        constraints: const BoxConstraints(),
+                                                        onPressed: (){
                                                       int quantity = sn.data![index].quantity!;
                                                       int price =  sn.data![index].initialPrice!;
                                                       if(quantity>1){
@@ -115,11 +121,12 @@ class _CartPageState extends State<CartPage> {
                                                       }
                                                     }, icon: const Icon(CupertinoIcons.minus)),
                                                     Container(
-                                                      decoration: const BoxDecoration(
+                                                      decoration: BoxDecoration(
                                                         color: Colors.blueGrey,
+                                                        borderRadius: BorderRadius.circular(3),
                                                       ),
-                                                      height: 50,
-                                                      width: 50,
+                                                      height: 30,
+                                                      width: 30,
                                                       child: Row(
                                                         mainAxisAlignment: MainAxisAlignment.center,
                                                         children: [
@@ -129,7 +136,10 @@ class _CartPageState extends State<CartPage> {
                                                         ]
                                                       ),
                                                     ),
-                                                    IconButton(onPressed: (){
+                                                    IconButton(
+                                                        padding: EdgeInsets.zero,
+                                                        constraints: const BoxConstraints(),
+                                                        onPressed: (){
                                                       int quantity = sn.data![index].quantity!;
                                                       int price =  sn.data![index].initialPrice!;
                                                       quantity++;
@@ -166,24 +176,43 @@ class _CartPageState extends State<CartPage> {
                             );
                           })
                   );
+                  }
+                  else{
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: const [
+                        Image(image: AssetImage("assets/images/empty.png"),fit: BoxFit.fill),
+                      ],
+                    );
+                  }
                 }
-                else{
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Image(image: AssetImage("assets/images/empty.png"),fit: BoxFit.fill),
-                    ],
-                  );
-                }
+                return Text("data");
             }),
             Consumer<CartProvider>(builder: (context,value, child){
               return Visibility(
                 visible: value.getTotalPrice().toStringAsFixed(2) == "0.00" ? false : true,
                 child: Column(
                   children: [
-                    TotalPrice(title: "Total Price", value: r'$' + value.getTotalPrice().toStringAsFixed(2))],
-                  ),
+                    TotalPrice(title: "Total Price", value: r'$' + value.getTotalPrice().toStringAsFixed(2)),
+                    const SizedBox(height: 10,),
+                    Container(
+                      height: 50.0,
+                      width: double.infinity,
+                      child: RaisedButton(
+                        color: Colors.blue,
+                        onPressed: () {},
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0)
+                        ),
+                        child: const Text(
+                          "Checkout",
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10,),
+                  ],
+                ),
               );
             })
           ],
@@ -202,11 +231,10 @@ class TotalPrice extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
-
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: Theme.of(context).textTheme.subtitle2,),
-          Text(value, style: Theme.of(context).textTheme.subtitle2,)
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25))
         ],
       ),
     );
